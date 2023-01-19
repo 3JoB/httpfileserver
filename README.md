@@ -1,9 +1,11 @@
 # httpfileserver
 
-[![travis](https://travis-ci.org/schollz/httpfileserver.svg?branch=master)](https://travis-ci.org/schollz/httpfileserver) 
-[![go report card](https://goreportcard.com/badge/github.com/schollz/httpfileserver)](https://goreportcard.com/report/github.com/schollz/httpfileserver) 
-[![coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://gocover.io/github.com/schollz/httpfileserver)
-[![godocs](https://godoc.org/github.com/schollz/httpfileserver?status.svg)](https://godoc.org/github.com/schollz/httpfileserver) 
+[![go report card](https://goreportcard.com/badge/github.com/3JoB/httpfileserver)](https://goreportcard.com/report/github.com/3JoB/httpfileserver) 
+[![godocs](https://godoc.org/github.com/3JoB/httpfileserver?status.svg)](https://godoc.org/github.com/3JoB/httpfileserver) 
+
+
+Fork from https://github.com/schollz/httpfileserver . This branch supports deflate, brotli, gzip and other methods.
+
 
 
 This is a drop-in replacement for the stdlib `http.FileServer` that automatically provides gzipping as well as serving from memory instead of from disk. This library wraps the stdlib `http.FileServer` so you get all the benefits of that code, while also providing gzipping and keeping track of bytes and storing served files from memory when they come available.
@@ -17,6 +19,10 @@ with this version
 	http.Handle("/static/", httpfileserver.New("/static/", "."))
 
 ## Usage
+
+```
+go get -u github.com/3JoB/httpfileserver
+```
 
 In order to serve files from a different directory other than specified by the route, you need to include the route when specifying a file server. For example, if you want to serve `/static` files from a local directory called `/tmp/myassets` then you can specify a new file server in the following:
 
@@ -33,11 +39,14 @@ package main
 import (
         "net/http"
 
-        "github.com/schollz/httpfileserver"
+        "github.com/3JoB/httpfileserver"
 )
 
 func main() {
 	// Any request to /static/somefile.txt will serve the file at the location ./somefile.txt
+        var fsr httpfileserver.FileServer
+	fsr.Config.FlateLevel = 3
+
         http.HandleFunc("/static/", httpfileserver.New("/static/", ".").Handle())
         http.ListenAndServe(":1113", nil)
 }

@@ -2,7 +2,7 @@ package httpfileserver
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,6 +27,7 @@ func BenchmarkServerDisableCache(b *testing.B) {
 		resp.Body.Close()
 	}
 }
+
 func BenchmarkServerMaxBytes(b *testing.B) {
 	ts := httptest.NewServer(New("/", ".", OptionMaxBytes(10)).Handle())
 	defer ts.Close()
@@ -46,12 +47,11 @@ func TestServer(t *testing.T) {
 		if err != nil {
 			t.Errorf("%s", err)
 		}
-		greeting, _ := ioutil.ReadAll(res.Body)
+		greeting, _ := io.ReadAll(res.Body)
 		res.Body.Close()
 
 		fmt.Printf("%s", greeting)
 	}
-
 }
 
 func TestServerMaxBytes(t *testing.T) {
@@ -63,10 +63,9 @@ func TestServerMaxBytes(t *testing.T) {
 		if err != nil {
 			t.Errorf("%s", err)
 		}
-		greeting, _ := ioutil.ReadAll(res.Body)
+		greeting, _ := io.ReadAll(res.Body)
 		res.Body.Close()
 
 		fmt.Printf("%s", greeting)
 	}
-
 }
