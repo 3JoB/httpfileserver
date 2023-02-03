@@ -2,8 +2,12 @@
     "cSpell.words": [
         "brotli",
         "fileint",
+        "Flate",
         "gzipped",
+        "httpfileserver",
+        "labstack",
         "mware",
+        "somefile",
         "zsdecoder",
         "zsencoder",
         "zstd"
