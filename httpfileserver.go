@@ -12,6 +12,7 @@ import (
 	"github.com/andybalholm/brotli"
 	"github.com/klauspost/compress/flate"
 	"github.com/klauspost/compress/gzip"
+	"github.com/klauspost/compress/zstd"
 )
 
 type FileServer struct {
@@ -136,9 +137,9 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// open from cache if its not disabled
 	if !fs.optionDisableCache {
 		switch Accept {
-		case "gzip":
+		case "gzip", "br", "zstd", "deflate":
 			// load the gzipped cache version if available
-			fileint, ok := fs.cache.Load(key + "gzip")
+			fileint, ok := fs.cache.Load(key + Accept)
 			if ok {
 				file := fileint.(file)
 				for k := range file.header {
@@ -146,42 +147,13 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						w.Header().Set(k, v)
 					}
 				}
-				w.Header().Set("Content-Encoding", "gzip")
-				w.Write(file.bytes)
-				return
-			}
-		case "br":
-			// load the gzipped cache version if available
-			fileint, ok := fs.cache.Load(key + "br")
-			if ok {
-				file := fileint.(file)
-				for k := range file.header {
-					for _, v := range file.header[k] {
-						w.Header().Set(k, v)
-					}
-				}
-				w.Header().Set("Content-Encoding", "br")
-				w.Write(file.bytes)
-				return
-			}
-		case "deflate":
-			// load the deflate cache version if available
-			fileint, ok := fs.cache.Load(key + "deflate")
-			if ok {
-				file := fileint.(file)
-				for k := range file.header {
-					for _, v := range file.header[k] {
-						w.Header().Set(k, v)
-					}
-				}
-				w.Header().Set("Content-Encoding", "deflate")
+				w.Header().Set("Content-Encoding", Accept)
 				w.Write(file.bytes)
 				return
 			}
 		}
-
-		// try to load a regular version from the cache
 		fileint, ok := fs.cache.Load(key)
+		// try to load a regular version from the cache
 		if ok {
 			file := fileint.(file)
 			for k := range file.header {
@@ -214,6 +186,15 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				w.Write(wb.Bytes())
 				file.bytes = wb.Bytes()
 				fs.cache.Store(key+"br", file)
+			case "zstd":
+				w.Header().Set("Content-Encoding", "zstd")
+				var wb bytes.Buffer
+				enc, _ := zstd.NewWriter(&wb)
+				enc.Write(file.bytes)
+				enc.Close()
+				w.Write(wb.Bytes())
+				file.bytes = wb.Bytes()
+				fs.cache.Store(key+"br", file)
 			case "deflate":
 				w.Header().Set("Content-Encoding", "deflate")
 				var wb bytes.Buffer
@@ -235,6 +216,9 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "gzip":
 		wc = gzip.NewWriter(w)
 		w.Header().Set("Content-Encoding", "gzip")
+	case "zstd":
+		wc, _ = zstd.NewWriter(w)
+		w.Header().Set("Content-Encoding", "zstd")
 	case "br":
 		wc = brotli.NewWriter(w)
 		w.Header().Set("Content-Encoding", "br")
