@@ -4,7 +4,7 @@
 [![godocs](https://godoc.org/github.com/3JoB/httpfileserver?status.svg)](https://godoc.org/github.com/3JoB/httpfileserver) 
 
 
-Fork from https://github.com/schollz/httpfileserver . This branch supports deflate, brotli, gzip and other methods.
+Fork from https://github.com/schollz/httpfileserver . This branch supports deflate, brotli, zstd, gzip and other methods.
 
 
 
