@@ -1,10 +1,13 @@
 {
     "cSpell.words": [
+        "andybalholm",
         "brotli",
         "fileint",
         "Flate",
         "gzipped",
+        "gzipping",
         "httpfileserver",
+        "klauspost",
         "labstack",
         "mware",
         "somefile",
