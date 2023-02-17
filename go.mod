@@ -3,7 +3,7 @@ module github.com/3JoB/httpfileserver
 go 1.19
 
 require (
-	github.com/andybalholm/brotli v1.0.4
+	github.com/andybalholm/brotli v1.0.5
 	github.com/klauspost/compress v1.15.15
 	github.com/labstack/echo/v4 v4.10.0
 )
