@@ -26,6 +26,7 @@ type FileServer struct {
 }
 
 type Mode []string
+
 var mode Mode
 
 func init() {
@@ -122,7 +123,7 @@ func (fs *FileServer) Flush() error {
 
 func (fs *FileServer) Delete(key string) error {
 	for _, v := range mode {
-		fs.cache.Delete(key+v)
+		fs.cache.Delete(key + v)
 	}
 	return nil
 }
@@ -243,7 +244,7 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		wc, _ = flate.NewWriter(w, -1)
 		w.Header().Set("Content-Encoding", "deflate")
 	default:
-		wc = &writeCloser{bufio.NewWriter(w)}
+		wc = &writeCloser{Writer: bufio.NewWriter(w)}
 	}
 	defer wc.Close()
 
