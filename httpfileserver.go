@@ -20,20 +20,17 @@ type FileServer struct {
 	route      string
 	middleware middleware
 	cache      sync.Map
-	Config     Config
 
 	optionDisableCache    bool
 	optionMaxBytesPerFile int
 }
 
-type Config struct {
-	FlateLevel int
-}
+type Mode []string
+var mode Mode
 
 func init() {
-	var fsr FileServer
-	if fsr.Config.FlateLevel == 0 {
-		fsr.Config.FlateLevel = -1
+	mode = []string{
+		"gzip", "br", "zstd", "deflate",
 	}
 }
 
@@ -108,6 +105,26 @@ type writeCloser struct {
 // Close will close the writer
 func (wc *writeCloser) Close() error {
 	return wc.Flush()
+}
+
+// Flush clears all data from cache
+func (fs *FileServer) Flush() error {
+	fs.cache.Range(func(k, v any) bool {
+		_, ok := v.(file)
+		if !ok {
+			return false
+		}
+		fs.cache.Delete(k)
+		return true
+	})
+	return nil
+}
+
+func (fs *FileServer) Delete(key string) error {
+	for _, v := range mode {
+		fs.cache.Delete(key+v)
+	}
+	return nil
 }
 
 // Write will have the middleware save the bytes
@@ -198,7 +215,7 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			case "deflate":
 				w.Header().Set("Content-Encoding", "deflate")
 				var wb bytes.Buffer
-				wc, _ := flate.NewWriter(&wb, fs.Config.FlateLevel)
+				wc, _ := flate.NewWriter(&wb, -1)
 				wc.Write(file.bytes)
 				wc.Close()
 				w.Write(wb.Bytes())
@@ -223,7 +240,7 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		wc = brotli.NewWriter(w)
 		w.Header().Set("Content-Encoding", "br")
 	case "deflate":
-		wc, _ = flate.NewWriter(w, fs.Config.FlateLevel)
+		wc, _ = flate.NewWriter(w, -1)
 		w.Header().Set("Content-Encoding", "deflate")
 	default:
 		wc = &writeCloser{bufio.NewWriter(w)}
