@@ -25,14 +25,9 @@ type FileServer struct {
 	optionMaxBytesPerFile int
 }
 
-type Mode []string
 
-var mode Mode
-
-func init() {
-	mode = []string{
-		"gzip", "br", "zstd", "deflate",
-	}
+var mode []string = []string{
+	"gzip", "br", "zstd", "deflate",
 }
 
 // New returns a new file server that can handle requests for
