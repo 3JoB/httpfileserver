@@ -120,6 +120,7 @@ func (fs *FileServer) Delete(key string) error {
 	for _, v := range mode {
 		fs.cache.Delete(key + v)
 	}
+	fs.cache.Delete(key)
 	return nil
 }
 
