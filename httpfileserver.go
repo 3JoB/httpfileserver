@@ -13,6 +13,7 @@ import (
 	"github.com/klauspost/compress/flate"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zstd"
+	"github.com/labstack/echo/v4"
 )
 
 type FileServer struct {
@@ -24,7 +25,6 @@ type FileServer struct {
 	optionDisableCache    bool
 	optionMaxBytesPerFile int
 }
-
 
 var mode []string = []string{
 	"gzip", "br", "zstd", "deflate",
@@ -140,6 +140,13 @@ func (fs *FileServer) Handle() http.HandlerFunc {
 	return fs.ServeHTTP
 }
 
+func (fs *FileServer) EchoHandle() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		fs.ServeHTTP(c.Response().Writer, c.Request())
+		return nil
+	}
+}
+
 // ServeHTTP is the server of the file server
 func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = strings.TrimPrefix(r.URL.Path, fs.route)
@@ -147,7 +154,6 @@ func (fs *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// check the sync map using the r.URL.Path and return
 	// the gzipped or the standard version
 	key := r.URL.Path
-
 	// open from cache if its not disabled
 	if !fs.optionDisableCache {
 		switch Accept {
