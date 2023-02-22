@@ -32,47 +32,7 @@ The route is in the handle as well as the instance of the file server so that it
 
 ## Example
 
-
-net/http
-
-```golang
-package main
-
-import (
-        "net/http"
-
-        "github.com/3JoB/httpfileserver"
-)
-
-func main() {
-	// Any request to /static/somefile.txt will serve the file at the location ./somefile.txt
-        http.HandleFunc("/static/", httpfileserver.New("/static/", ".").Handle())
-        http.ListenAndServe(":1113", nil)
-}
-```
-
-echo
-
-```golang
-package main
-
-import (
-    "github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-
-    "github.com/3JoB/httpfileserver"
-)
-
-func main() {
-	// Any request to /static/somefile.txt will serve the file at the location ./somefile.txt
-    e := echo.New()
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
-	e.GET("*", echo.WrapHandler(httpfileserver.New("/assets/", ".").Handle()))
-    e.Logger.Fatal(e.Start(":1113"))
-}
-```
+see [example](example)
 
 ## Benchmarks
 
