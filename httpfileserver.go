@@ -10,11 +10,9 @@ import (
 	"time"
 
 	"github.com/andybalholm/brotli"
-	"github.com/gin-gonic/gin"
 	"github.com/klauspost/compress/flate"
 	"github.com/klauspost/compress/gzip"
 	"github.com/klauspost/compress/zstd"
-	"github.com/labstack/echo/v4"
 )
 
 type FileServer struct {
@@ -139,19 +137,6 @@ func (m middleware) Write(b []byte) (int, error) {
 // Handle gives a handlerfunc for the file server
 func (fs *FileServer) Handle() http.HandlerFunc {
 	return fs.ServeHTTP
-}
-
-func (fs *FileServer) EchoHandle() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		fs.ServeHTTP(c.Response().Writer, c.Request())
-		return nil
-	}
-}
-
-func (fs *FileServer) GinHandle() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		fs.ServeHTTP(c.Writer, c.Request)
-	}
 }
 
 // ServeHTTP is the server of the file server

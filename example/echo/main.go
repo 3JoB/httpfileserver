@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/3JoB/httpfileserver"
+	he "github.com/3JoB/httpfileserver/echo"
 )
 
 func main() {
@@ -13,6 +14,6 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("*", httpfileserver.New("/assets/", ".").EchoHandle())
+	e.GET("*", he.EchoHandle(httpfileserver.New("/assets/", ".")))
 	e.Logger.Fatal(e.Start(":1113"))
 }
