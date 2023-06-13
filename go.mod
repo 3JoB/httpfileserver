@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/andybalholm/brotli v1.0.5
 	github.com/gin-gonic/gin v1.9.1
-	github.com/klauspost/compress v1.16.5
+	github.com/klauspost/compress v1.16.6
 	github.com/labstack/echo/v4 v4.10.2
 )
 
