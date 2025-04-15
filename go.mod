@@ -1,11 +1,12 @@
 module github.com/3JoB/httpfileserver
 
 go 1.20
+toolchain go1.24.1
 
 require (
 	github.com/andybalholm/brotli v1.0.5
 	github.com/gin-gonic/gin v1.9.1
-	github.com/klauspost/compress v1.16.5
+	github.com/klauspost/compress v1.18.0
 	github.com/labstack/echo/v4 v4.11.1
 )
 
