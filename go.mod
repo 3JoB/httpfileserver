@@ -1,9 +1,9 @@
 module github.com/3JoB/httpfileserver
 
-go 1.20
+go 1.23.0
 
 require (
-	github.com/andybalholm/brotli v1.0.5
+	github.com/andybalholm/brotli v1.2.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/klauspost/compress v1.16.5
 	github.com/labstack/echo/v4 v4.11.1
